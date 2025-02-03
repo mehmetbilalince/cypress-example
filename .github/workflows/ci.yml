@@ -1,0 +1,50 @@
+name: End-to-end tests
+
+on: push
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: npm install
+
+      # Cypress binary'yi önbelleğe alıyoruz
+      - name: Cache Cypress binary
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/Cypress
+          key: ${{ runner.os }}-cypress-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-cypress-
+
+      # Cypress binary dosyasını yükle
+      - name: Install Cypress binary
+        run: npx cypress install
+
+      - name: Run Cypress Tests
+        uses: cypress-io/github-action@v6
+        with:
+          install-command: npm install
+          runTests: true
+
+      # Hata durumunda Cypress ekran görüntülerini yükle
+      - name: Upload Cypress screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+          if-no-files-found: ignore
+
+      # Cypress test videolarını her zaman yükle
+      - name: Upload Cypress videos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-videos
+          path: cypress/videos
+          if-no-files-found: ignore
