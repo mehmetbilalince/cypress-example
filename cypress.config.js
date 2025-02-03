@@ -1,6 +1,7 @@
 const { defineConfig } = require("cypress");
 
 module.exports = defineConfig({
+  projectId: 'pozrtn',
   viewportHeight: 1200,
   viewportWidth: 1500, 
   reporter: 'cypress-mochawesome-reporter', 
@@ -11,11 +12,11 @@ module.exports = defineConfig({
     json: true, 
   },
   e2e: {
-    experimentalRunAllSpecs: true,  // Bütün dosyaların birlikte çalışması için
-    experimentalStudio: true, // Cypress studio
+    baseUrl: "https://opensource-demo.orangehrmlive.com/", 
     setupNodeEvents(on, config) {
-      require('cypress-mochawesome-reporter/plugin');
+      require('cypress-mochawesome-reporter/plugin')(on);
     },
-    baseUrl: "https://opensource-demo.orangehrmlive.com/"
+    experimentalRunAllSpecs: true,  // Bütün dosyaların birlikte çalışması için
+    experimentalStudio: true, // Cypress Studio
   },
 });
